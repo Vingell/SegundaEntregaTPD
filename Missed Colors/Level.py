@@ -23,10 +23,13 @@ class Level:
     screen = pygame.display.set_mode(screenSize, 0, 32)
     pygame.display.set_caption("Missed Colors")
 
-    
+    # Se llama a init porque por alguna razon no lo hace automatico al crear la instancia
     player = Player()
+    player._init_()
     background = Background()
+    background._init_()
 
+    # Para calcular el tiempo
     clock = pygame.time.Clock()
 
     while True:
@@ -40,14 +43,16 @@ class Level:
                 exit()
 
         # Update de instancias importantes
-        player.update(elapsedTime)
+        player.update(elapsedTime, background.group)
         background.update(elapsedTime)
 
+        # fondo blanco
+        screen.fill((255, 255, 255))
+        
         #render de instancias importantes
         player.render()
         background.render()
 
-        screen.fill((255, 255, 255))
         pygame.display.update()
 
     
