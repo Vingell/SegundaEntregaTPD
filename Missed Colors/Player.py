@@ -24,10 +24,15 @@ class Player:
     # Constructor
     def _init_(self, x = 300, y = 400):
         self.deltaX = 0
+        self.deltaY = 0
         self.X = x
         self.Y = y
         self.initSpriteData()
-
+        self.jumpvelocity=20
+        self.height
+      #  self.falling
+      #  self.fallspeed
+        
 
     # Setea el sprite con su imagen y rectangulo
     def initSpriteData(self):
@@ -37,7 +42,7 @@ class Player:
         height = self.sprite.image.get_height()
         self.sprite.image = pygame.transform.scale(self.sprite.image, (width,height)) 
         self.sprite.rect = pygame.Rect((self.X, self.Y), (width,height))
-        
+        self.height = height
 
     # Metodo que updatea valores de instancia
     def update(self, elapsedTime, group):      
@@ -50,11 +55,14 @@ class Player:
             self.walk(group, -20)
         if not pressedKey[K_LEFT] and not pressedKey[K_RIGHT]:
             self.walk(group,0)
-
+        if pressedKey[K_SPACE]:
+            self.jump(group, -30)
+            
         # Una vez definidos deltaX y deltaY, los asigna a sus valores posicion
+        self.gravity(group,5)
         self.X += self.deltaX
         self.Y += self.deltaY
-
+        
         # Al terminar de hacer update, deja listo el rectangulo con los nuevos valores
         self.sprite.rect = pygame.Rect((self.X, self.Y), (self.sprite.rect.width, self.sprite.rect.height))
         
@@ -81,5 +89,32 @@ class Player:
             elif xAdvance < 0:
                 leftWallX = self.clashManager.rightX 
                 self.deltaX = leftWallX - self.X
-            
+
+    #Metodo de salto (por ahora aumenta en un numero igual a todo el salto)
+    #recibe grupo para validar la posibilidad de salto y evitar colisiones
+    def jump(self, group, yAdvance):
+
+        clashed = self.clashManager.CheckCollision(self.sprite, group, self.X , self.Y + yAdvance)
+
+        if not clashed:
+            self.deltaY = yAdvance
+
+    def gravity(self, group, deltaY):
+        
+        clashed = self.clashManager.CheckCollision(self.sprite, group, self.X , self.Y + deltaY)
+
+        if not clashed:
+            self.deltaY += deltaY
+##        elif self.clashManager.topY <  self.deltaY + deltaY + self.Y :
+##            self.Y = self.clashManager.topY + self.height
+##            self.deltaY = 0
+##       # elif self.clashManager.bottomY >  self.deltaY + deltaY +self.Y :
+##        #    self.Y = self.clashManager.bottomY 
+
+   # def fall(self,gravity):
+    #    if self.falling==1:
+      #      if self.fallspeed>self.maxvel:
+      #          self.fallspeed=self.maxvel
+       #     self.rect=self.rect.move(0,self.fallspeed)  
+
         
