@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from Player import Player
 from Background import Background
-
+from projectileMotion import projectileMotion
 
 class Level:
 
@@ -25,7 +25,7 @@ class Level:
 
     # Se llama a init porque por alguna razon no lo hace automatico al crear la instancia
     player = Player()
-    player._init_()
+    player._init_(projectileMotion())
     background = Background()
     background._init_()
 
@@ -55,8 +55,3 @@ class Level:
 
         pygame.display.update()
 
-    
-
-        
-
-    

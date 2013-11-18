@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from pygame import mixer
 from boxCollision import boxCollision
-
+from projectileMotion import projectileMotion
 #-Ignorar-esto,-lo-uso-pa-hacer-test-de-codigo---
 mixer.init()
 walk = mixer.Sound('sounds//walk.wav')
@@ -13,24 +13,28 @@ class Player:
 
     clashManager = boxCollision()
     sprite = pygame.sprite.Sprite()
-
+    
     deltaX = 0.0
     deltaY = 0.0
-
+    projectileMotion = projectileMotion()
     walking = bool()
     still = bool()
 
 
     # Constructor
-    def _init_(self, x = 300, y = 400):
+    def _init_(self, movparabolico, x = 300, y = 400):
         self.deltaX = 0
+        self.projectileMotion = movparabolico
+        self.projectileMotion._init_()
         self.deltaY = 0
         self.X = x
         self.Y = y
         self.initSpriteData()
         self.jumpvelocity=20
         self.height
-      #  self.falling
+        self.jumping = False
+        self.falling = False
+        
       #  self.fallspeed
         
 
@@ -56,10 +60,14 @@ class Player:
         if not pressedKey[K_LEFT] and not pressedKey[K_RIGHT]:
             self.walk(group,0)
         if pressedKey[K_SPACE]:
-            self.jump(group, -30)
+            if not self.jumping:
+                self.startjump(group,-500)
+                #self.jumping = True
+         
             
         # Una vez definidos deltaX y deltaY, los asigna a sus valores posicion
-        self.gravity(group,5)
+        if self.jumping:
+            self.updatejump(group,1)
         self.X += self.deltaX
         self.Y += self.deltaY
         
@@ -92,29 +100,33 @@ class Player:
 
     #Metodo de salto (por ahora aumenta en un numero igual a todo el salto)
     #recibe grupo para validar la posibilidad de salto y evitar colisiones
-    def jump(self, group, yAdvance):
+    def startjump(self, group, yAdvance):
 
         clashed = self.clashManager.CheckCollision(self.sprite, group, self.X , self.Y + yAdvance)
-
+        
         if not clashed:
             self.deltaY = yAdvance
+            if not self.jumping:
+                self.projectileMotion.Vel = yAdvance
+                self.projectileMotion.start(self.Y)
+                self.jumping = True
+            
+    
+    def updatejump(self,group,yAdvance):
 
-    def gravity(self, group, deltaY):
-        
-        clashed = self.clashManager.CheckCollision(self.sprite, group, self.X , self.Y + deltaY)
+        ##POR AHORA ASI
+          
+         clashed = self.clashManager.CheckCollision(self.sprite, group, self.X , self.Y + yAdvance)
+         self.projectileMotion.update(1)
+         self.deltaY = self.projectileMotion.deltaY
+         #if not clashed:
+         #    self.projectileMotion.update(1)
+         #    self.deltaY = self.projectileMotion.deltaY
 
-        if not clashed:
-            self.deltaY += deltaY
-##        elif self.clashManager.topY <  self.deltaY + deltaY + self.Y :
-##            self.Y = self.clashManager.topY + self.height
-##            self.deltaY = 0
-##       # elif self.clashManager.bottomY >  self.deltaY + deltaY +self.Y :
-##        #    self.Y = self.clashManager.bottomY 
-
-   # def fall(self,gravity):
-    #    if self.falling==1:
-      #      if self.fallspeed>self.maxvel:
-      #          self.fallspeed=self.maxvel
-       #     self.rect=self.rect.move(0,self.fallspeed)  
+   ## def fall(self,gravity):
+   # #    if self.falling==1:
+   #   #      if self.fallspeed>self.maxvel:
+   #   #          self.fallspeed=self.maxvel
+   #    #     self.rect=self.rect.move(0,self.fallspeed)  
 
         

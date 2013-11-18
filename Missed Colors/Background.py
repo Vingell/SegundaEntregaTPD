@@ -49,3 +49,4 @@ class Background:
         brick6.rect = pygame.Rect((700, 500), (width,height))
         
         group.add(brick1, brick2, brick3, brick4, brick5, brick6)
+
